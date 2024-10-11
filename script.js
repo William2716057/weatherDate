@@ -1,4 +1,3 @@
-
 document.getElementById('weatherForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -25,22 +24,35 @@ async function getWeather(location, dateTime) {
     const hours = dateTime.split(' ')[1].split(':')[0];
     const historicalData = data.forecast.forecastday[0].hour.find(hour => hour.time.split(' ')[1].split(':')[0] == hours);
 
-    return historicalData;
+    return {
+        currentConditions: historicalData,
+        sunrise: data.forecast.forecastday[0].astro.sunrise,
+        sunset: data.forecast.forecastday[0].astro.sunset,
+        moonrise: data.forecast.forecastday[0].astro.moonrise,
+        moonset: data.forecast.forecastday[0].astro.moonset,
+        moonPhase: data.forecast.forecastday[0].astro.moon_phase
+    };
 }
 
 function displayWeather(data) {
     const weatherResult = document.getElementById('weatherResult');
 
-    if (!data) {
+    if (!data.currentConditions) {
         weatherResult.innerHTML = `<p>Error: Weather data not found</p>`;
         return;
     }
 
-    const time = data.time.split(' ')[1];
-    const temp = data.temp_c;
-    const condition = data.condition.text;
+    const time = data.currentConditions.time.split(' ')[1];
+    const temp = data.currentConditions.temp_c;
+    const condition = data.currentConditions.condition.text;
+    const { sunrise, sunset, moonrise, moonset, moonPhase } = data;
 
     weatherResult.innerHTML = `
         <p>Weather at ${time}: ${temp}°C, ${condition}</p>
+        <p>Sunrise: ${sunrise}</p>
+        <p>Sunset: ${sunset}</p>
+        <p>Moonrise: ${moonrise}</p>
+        <p>Moonset: ${moonset}</p>
+        <p>Moon Phase: ${moonPhase}</p>
     `;
 }
